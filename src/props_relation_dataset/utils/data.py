@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import torch
 import torchvision
 
-import rob599
+import props_relation_dataset.utils as utils
 
 
 def _extract_tensors(dset, num=None, x_dtype=torch.float32):
@@ -53,8 +53,8 @@ def progress_objects(num_train=None, num_test=None, x_dtype=torch.float32):
     - y_test: int64 tensor of shape (num_test, 3, 32, 32)
     """
     download = not os.path.isdir("Progress-Objects-Sample")
-    dset_train = rob599.ProgressObjectsDataset(root=".", train=True, download=download)
-    dset_test = rob599.ProgressObjectsDataset(root=".", train=False)
+    dset_train = utils.ProgressObjectsDataset(root=".", train=True, download=download)
+    dset_test = utils.ProgressObjectsDataset(root=".", train=False)
     x_train, y_train = _extract_tensors(dset_train, num_train, x_dtype)
     x_test, y_test = _extract_tensors(dset_test, num_test, x_dtype)
 
@@ -126,7 +126,7 @@ def preprocess_progress_objects(
 		]
         samples_per_class = 12
         samples = []
-        rob599.reset_seed(0)
+        utils.reset_seed(0)
         for y, cls in enumerate(classes):
             plt.text(-4, 34 * y + 18, cls, ha="right")
             (idxs,) = (y_train == y).nonzero(as_tuple=True)
@@ -134,7 +134,7 @@ def preprocess_progress_objects(
                 idx = idxs[random.randrange(idxs.shape[0])].item()
                 samples.append(X_train[idx])
         img = torchvision.utils.make_grid(samples, nrow=samples_per_class)
-        plt.imshow(rob599.tensor_to_image(img))
+        plt.imshow(utils.tensor_to_image(img))
         plt.axis("off")
         plt.show()
 

@@ -1,0 +1,15 @@
+.gitignore
+README.md
+pyproject.toml
+setup.py
+src/props_relation_dataset/PropsRelationDataset.py
+src/props_relation_dataset.egg-info/PKG-INFO
+src/props_relation_dataset.egg-info/SOURCES.txt
+src/props_relation_dataset.egg-info/dependency_links.txt
+src/props_relation_dataset.egg-info/top_level.txt
+src/props_relation_dataset/datasets/PROPSPoseDataset.py
+src/props_relation_dataset/datasets/ProgressObjectsDataset.py
+src/props_relation_dataset/datasets/__init__.py
+src/props_relation_dataset/utils/__init__.py
+src/props_relation_dataset/utils/data.py
+src/props_relation_dataset/utils/utils.py

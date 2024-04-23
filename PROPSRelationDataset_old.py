@@ -12,7 +12,7 @@ import numpy as np
 from torch.utils.data import Dataset
 from torchvision.datasets.utils import download_and_extract_archive
 
-from rob599 import Visualize, chromatic_transform, add_noise, PROPSPoseDataset
+from rob599 import Visualize, chromatic_transform, add_noise, PROPSPoseDataset, ProgressObjectsDataset
 from rob599.data import progress_objects
 
 
@@ -66,6 +66,12 @@ class PROPSRelationDataset(PROPSPoseDataset):
         return relations_matrix
 
     def generate_canidate_patches(self, x_train, y_train):
+
+        download = not os.path.isdir("Progress-Objects-Sample")
+        dset_train = ProgressObjectsDataset(root=".", train=True, download=download)
+        dset_test = ProgressObjectsDataset(root=".", train=False)
+        x_train, y_train = _extract_tensors(dset_train, num_train, x_dtype)
+        x_test, y_test = _extract_tensors(dset_test, num_test, x_dtype)
         classes = [
             "master_chef_can",
             "cracker_box",
@@ -97,4 +103,5 @@ if __name__ == "__main__":
 
     # generate candidate patches
     x_train, y_train, _,_ = progress_objects()
-    dataset.generate_canidate_patches(x_train, y_train)
+    # dataset.generate_canidate_patches(x_train, y_train)
+    print(x_train)
