@@ -1,4 +1,14 @@
 PROPS-Pose-Dataset/
 Progress-Objects-Sample/
-objects/
+canidate_objects/
 *.tar.gz
+*pyc
+*.egg-info*
+*.egg
+src/*.egg-info
+lm/
+*.zip
+objects/
+TO-vanilla/
+src/props_relation_dataset.egg-info/
+__pycache__/

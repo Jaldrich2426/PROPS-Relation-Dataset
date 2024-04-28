@@ -11,7 +11,7 @@ import numpy as np
 from torch.utils.data import Dataset
 from torchvision.datasets.utils import download_and_extract_archive
 
-from rob599 import Visualize, chromatic_transform, add_noise
+from props_relation_dataset.utils import Visualize, chromatic_transform, add_noise
 
 
 
@@ -164,7 +164,7 @@ class PROPSPoseDataset(Dataset):
 
         data_dict = {
             'rgb',
-            'depth',
+            'depth',id
             'objs_id',
             'mask',
             'bbx',
