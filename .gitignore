@@ -2,3 +2,5 @@ PROPS-Pose-Dataset/
 Progress-Objects-Sample/
 canidate_objects/
 *.tar.gz
+*pyc
+*.egg-info*

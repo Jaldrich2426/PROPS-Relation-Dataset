@@ -6,6 +6,7 @@ import torch
 import torchvision
 
 import props_relation_dataset.utils as utils
+import props_relation_dataset.datasets as datasets
 
 
 def _extract_tensors(dset, num=None, x_dtype=torch.float32):
@@ -53,8 +54,8 @@ def progress_objects(num_train=None, num_test=None, x_dtype=torch.float32):
     - y_test: int64 tensor of shape (num_test, 3, 32, 32)
     """
     download = not os.path.isdir("Progress-Objects-Sample")
-    dset_train = utils.ProgressObjectsDataset(root=".", train=True, download=download)
-    dset_test = utils.ProgressObjectsDataset(root=".", train=False)
+    dset_train = datasets.ProgressObjectsDataset(root=".", train=True, download=download)
+    dset_test = datasets.ProgressObjectsDataset(root=".", train=False)
     x_train, y_train = _extract_tensors(dset_train, num_train, x_dtype)
     x_test, y_test = _extract_tensors(dset_test, num_test, x_dtype)
 
