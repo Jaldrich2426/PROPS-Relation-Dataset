@@ -21,7 +21,9 @@ https://drive.google.com/file/d/1rEn88wnhNdN8BsghrHNyaOdXeCRIi8F3/view?usp=shari
 An example usage of the Props Relation dataset is provided in its source file, as well as three examples in our sornet fork:
 
 [training]()
+
 [testing]()
+
 [visualizing]()
 
 ## Custom Usage
