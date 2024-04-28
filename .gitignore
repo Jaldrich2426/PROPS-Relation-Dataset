@@ -4,3 +4,7 @@ canidate_objects/
 *.tar.gz
 *pyc
 *.egg-info*
+lm/
+*.zip
+objects/
+T0-vanilla/
