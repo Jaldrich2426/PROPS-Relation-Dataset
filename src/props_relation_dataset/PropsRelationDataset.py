@@ -27,7 +27,7 @@ class PROPSRelationDataset(BaseRelationDataset):
         super().__init__(split, object_dir, sornet_args, rand_patch, resize)
 
     def _get_object_ids_in_image(self, idx):
-        return self.dataset[idx]['objs_id']
+        return self.dataset[idx]['objs_id'].tolist()
 
     def _get_object_xyzs_in_image(self, idx, obj_idx):
         return self.dataset[idx]["RTs"][obj_idx][:3, 3]
@@ -60,3 +60,34 @@ class PROPSRelationDataset(BaseRelationDataset):
 
     def get_objs_in_image(self, idx):
         return self.dataset[idx]['objs_id']
+
+if __name__ == "__main__":
+    # example usage below with dummy args
+    parser = argparse.ArgumentParser()
+    # Data
+    parser.add_argument('--max_nobj', type=int, default=10)
+    parser.add_argument('--img_h', type=int, default=320)
+    parser.add_argument('--img_w', type=int, default=480)
+    parser.add_argument('--n_worker', type=int, default=1)
+    # Model
+    parser.add_argument('--patch_size', type=int, default=32)
+    parser.add_argument('--width', type=int, default=768)
+    parser.add_argument('--layers', type=int, default=12)
+    parser.add_argument('--heads', type=int, default=12)
+    parser.add_argument('--d_hidden', type=int, default=512)
+    # Training
+    parser.add_argument('--log_dir')
+    parser.add_argument('--n_gpu', type=int, default=1)
+    parser.add_argument('--port', default='12345')
+    parser.add_argument('--batch_size', type=int, default=32)
+    parser.add_argument('--lr', type=float, default=0.0001)
+    parser.add_argument('--n_epoch', type=int, default=80)
+    parser.add_argument('--print_freq', type=int, default=5)
+    parser.add_argument('--eval_freq', type=int, default=1)
+    parser.add_argument('--save_freq', type=int, default=1)
+    parser.add_argument('--resume')
+    args = parser.parse_args()
+
+    train = PROPSRelationDataset("train","objects",args,rand_patch=True,resize=True)
+    # print(train[0])
+    train[0]

@@ -20,6 +20,7 @@ from torchvision.transforms import functional as F
 from pathlib import Path
 import re
 import argparse
+from tqdm import tqdm
 
 
 class BaseRelationDataset(Dataset):
@@ -39,11 +40,13 @@ class BaseRelationDataset(Dataset):
         self.obj_dir = object_dir
         self.split=split
         self.objects_dict = self._load_objects(obj_dir=object_dir)
+
         self.rand_patch = rand_patch
         self.max_nobj = sornet_args.max_nobj
         self.resize = resize
         self.img_size = (sornet_args.img_h, sornet_args.img_w)
         self.dataset = self._init_parent_dataset(split,sornet_args)
+        self._load_spatial_relations()
 
     def _get_object_ids_in_image(self,idx):
         """list of object identifiers in image at given index"""
@@ -95,6 +98,9 @@ class BaseRelationDataset(Dataset):
         self.obj_idx_to_id = {}
         idx=0
         for obj_type_dir in os.listdir(obj_dir):
+            # skip if not a directory
+            if not os.path.isdir(os.path.join(obj_dir, obj_type_dir)):
+                continue
             obj_id = int(obj_type_dir.split("_")[0])
             obj_idx = idx
             idx+=1
@@ -113,46 +119,65 @@ class BaseRelationDataset(Dataset):
             obj_dict[obj_id] = [single_obj_type_dict[i] for i in range(len(single_obj_type_dict))]
         return obj_dict
 
-    def get_spatial_relations(self, idx):
+    def _load_spatial_relations(self):
+        if (os.path.exists(os.path.join(self.obj_dir, f"{self.split}_relations.pt"))):
+            self.relations = torch.load(os.path.join(self.obj_dir, f"{self.split}_relations.pt"))
+            return
+        # initialize relations list - 4d tensor or len dataset, num relations, num objects, num objects
+        self.relations = torch.zeros((len(self.dataset), 4, self.max_nobj, self.max_nobj))
+        is_left_of_matrix = torch.ones((len(self.dataset), self.max_nobj, self.max_nobj))*-1
+        is_right_of_matrix = torch.ones((len(self.dataset), self.max_nobj, self.max_nobj))*-1
+        is_front_of_matrix = torch.ones((len(self.dataset), self.max_nobj, self.max_nobj))*-1
+        is_behind_of_matrix = torch.ones((len(self.dataset), self.max_nobj, self.max_nobj))*-1
+        print("Generating and saving spatial relations")
+        for idx in tqdm(range(len(self.dataset))):
+            # get object relations for a single image
+            objs_visib = self._get_object_ids_in_image(idx)
 
-        # get object relations for a single image
-        objs_visib = self._get_object_ids_in_image(idx)
-
-        # for object in the dataset, create a dictionary of the object id and the corresponding pose
-        # object pose dictionary in form of object_id: pose
-        object_poses = {}
-        for objidx, objs_id in enumerate(objs_visib):
-            if objs_id == 0:
-                continue
-            object_poses[objs_id] = self._get_object_xyzs_in_image(idx,objidx)
-
-        # fill to -1
-        is_left_of_matrix = torch.ones((self.max_nobj, self.max_nobj))*-1
-        is_right_of_matrix = torch.ones((self.max_nobj, self.max_nobj))*-1
-        is_front_of_matrix = torch.ones((self.max_nobj, self.max_nobj))*-1
-        is_behind_of_matrix = torch.ones((self.max_nobj, self.max_nobj))*-1
-
-        # num_objects = len(object_poses)
-        # print(len(object_poses))
-        for i in range(self.max_nobj):
-            obj1 = i+1
-            for j in range(self.max_nobj):
-                obj2 = j+1
-                if obj1 not in object_poses or obj2 not in object_poses:
+            # for object in the dataset, create a dictionary of the object id and the corresponding pose
+            # object pose dictionary in form of object_id: pose
+            object_poses = {}
+            for objidx, objs_id in enumerate(objs_visib):
+                if objs_id == 0:
                     continue
-                if i == j:
-                    continue
-                is_left_of_matrix[i][j] = float(object_poses[obj1][0] < object_poses[obj2][0])
-                is_right_of_matrix[i][j] = float(object_poses[obj1][0] > object_poses[obj2][0])
-                is_front_of_matrix[i][j] = float(object_poses[obj1][2] < object_poses[obj2][2])
-                is_behind_of_matrix[i][j] = float(object_poses[obj1][2] > object_poses[obj2][2])
+                object_poses[objs_id] = self._get_object_xyzs_in_image(idx,objidx)
+
+            # fill to -1
+            # is_left_of_matrix = torch.ones((self.max_nobj, self.max_nobj))*-1
+            # is_right_of_matrix = torch.ones((self.max_nobj, self.max_nobj))*-1
+            # is_front_of_matrix = torch.ones((self.max_nobj, self.max_nobj))*-1
+            # is_behind_of_matrix = torch.ones((self.max_nobj, self.max_nobj))*-1
+
+            # num_objects = len(object_poses)
+            # print(len(object_poses))
+            
         
-        # combine relations into 2d array
-        relations_matrix = torch.stack([is_left_of_matrix, is_right_of_matrix,
-                                        is_front_of_matrix, is_behind_of_matrix], axis=0)
 
+            for i in range(self.max_nobj):
+                obj1 = i+1
+                for j in range(self.max_nobj):
+                    obj2 = j+1
+                    if obj1 not in object_poses or obj2 not in object_poses:
+                        continue
+                    if i == j:
+                        continue
+                    is_left_of_matrix[idx][i][j] = float(object_poses[obj1][0] < object_poses[obj2][0])
+                    is_right_of_matrix[idx][i][j] = float(object_poses[obj1][0] > object_poses[obj2][0])
+                    is_front_of_matrix[idx][i][j] = float(object_poses[obj1][2] < object_poses[obj2][2])
+                    is_behind_of_matrix[idx][i][j] = float(object_poses[obj1][2] > object_poses[obj2][2])
+
+        # combine relations into 2d array
+        self.relations = torch.stack([is_left_of_matrix, is_right_of_matrix,
+                                        is_front_of_matrix, is_behind_of_matrix], axis=1)
+        torch.save(self.relations, os.path.join(self.obj_dir, f"{self.split}_relations.pt"))
+        # print(self.relations.shape)
+        # print(self.relations[idx].shape)
+        # print(relation_matrix.shape)
+        # self.relations= relation_matrix
         # relations_matrix = torch.tensor(relations_matrix)
-        return relations_matrix
+
+    def get_spatial_relations(self, idx):
+        return self.relations[idx]
 
     def __getitem__(self, idx):
         # Get object patches.
