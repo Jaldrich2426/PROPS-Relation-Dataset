@@ -20,11 +20,11 @@ https://drive.google.com/file/d/1rEn88wnhNdN8BsghrHNyaOdXeCRIi8F3/view?usp=shari
 
 An example usage of the Props Relation dataset is provided in its source file, as well as three examples in our sornet fork:
 
-[training]()
+[training](https://github.com/Jaldrich2426/sornet/blob/main/train_props.py)
 
-[testing]()
+[testing](https://github.com/Jaldrich2426/sornet/blob/main/test_props.py)
 
-[visualizing]()
+[visualizing](https://github.com/Jaldrich2426/sornet/blob/main/visualize_props.py)
 
 ## Custom Usage
 
@@ -34,4 +34,4 @@ To use this framework with another dataset, simply create a new file and overloa
 
 to make the implementation easier. Otherwise, load the appropriate file information in each class method and the base class should handle the relation information automatically, provided that the camera frame uses the standard notation.
 
-If you would like to add further relations, simply overload the ```get_spatial_relations()``` method, and watch for any locations a "4" was hardcoded for the number of locations
+If you would like to add further relations, simply overload the ```get_spatial_relations()``` method, and watch for any locations a "4" was hardcoded for the number of locations.
