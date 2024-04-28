@@ -46,9 +46,6 @@ class BaseRelationDataset(Dataset):
         self.resize = resize
         self.img_size = (sornet_args.img_h, sornet_args.img_w)
         self.dataset = self._init_parent_dataset(split,sornet_args)
-        # self._load_spatial_relations()
-        print("in init")
-        self.t = Timer("""x.index(123)""", setup="""x = range(1000)""")
     
     def _get_data(self, idx):
         raise NotImplementedError()
