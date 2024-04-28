@@ -7,4 +7,5 @@ canidate_objects/
 lm/
 *.zip
 objects/
-T0-vanilla/
+TO-vanilla/
+src/props_relation_dataset.egg-info/
