@@ -4,9 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "props_relation_dataset"
-version = "0.0.1"
+version = "1.0.0"
 authors = [
   { name="Jace Aldrich", email="jacealdr@umich.edu" },
+  { name="Ariana Verges Alicea", email="alarian@umich.edu" },
+  { name="Hannah Ho", email="hdho@umich.edu" },
 ]
 description = "Props relation dataset for SORNET or other spatial relation networks"
 readme = "README.md"
@@ -18,8 +20,8 @@ classifiers = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/janapavlasek/mrf-swarm"
-"Bug Tracker" = "https://github.com/janapavlasek/mrf-swarm/issues"
+"Homepage" = "https://github.com/Jaldrich2426/PROPS-Relation-Dataset"
+"Bug Tracker" = "https://github.com/Jaldrich2426/PROPS-Relation-Dataset/issues"
 
 [tool.black]
 line-length = 100
