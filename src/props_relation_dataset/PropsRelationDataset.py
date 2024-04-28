@@ -23,43 +23,122 @@ import argparse
 from props_relation_dataset.BaseRelationDataset import BaseRelationDataset
 
 class PROPSRelationDataset(BaseRelationDataset):
+    """
+    A dataset class for PROPS relation dataset, overriding the BaseRelationDataset class.
+    The methods that raise NotImplementedError in the BaseRelationDataset class are implemented here.
+    
+    Args:
+        split (str): The split of the dataset (e.g., 'train', 'val', 'test').
+        object_dir (str): The directory containing the object images.
+        sornet_args (dict): Arguments for the SORNet model.
+        rand_patch (bool): Whether to randomly patch the images.
+        resize (tuple): The desired size to resize the images.
+
+    Attributes:
+        split (str): The split of the dataset.
+        object_dir (str): The directory containing the object images.
+        sornet_args (dict): Arguments for the SORNet model.
+        rand_patch (bool): Whether to randomly patch the images.
+        resize (tuple): The desired size to resize the images.
+        dataset (PROPSPoseDataset): The parent dataset.
+
+    Methods:
+        _get_data(idx): Get the data for a specific index.
+        _get_object_class_list(): Get the list of object classes.
+        _get_object_images_labels(): Get the object images and labels.
+        _init_parent_dataset(split, sornet_args): Initialize the parent dataset.
+        get_objs_in_image(idx): Get the object IDs in an image.
+    """
+
     def __init__(self, split, object_dir, sornet_args, rand_patch, resize):
+        """
+        Initializes a PropsRelationDataset object.
+
+        Args:
+            split (str): The split of the dataset (e.g., 'train', 'val', 'test').
+            object_dir (str): The directory containing the object data.
+            sornet_args (dict): A dictionary of arguments for the SORNet model.
+            rand_patch (bool): Whether to use random patches for training.
+            resize (tuple): The desired size to resize the images.
+
+        Returns:
+            None
+        """
         super().__init__(split, object_dir, sornet_args, rand_patch, resize)
 
-    
-
-
     def _get_data(self, idx):
-        datapoint=self.dataset[idx]
+        """
+        Get the data for a specific index.
+
+        Args:
+            idx (int): The index of the data to retrieve.
+
+        Returns:
+            tuple: A tuple containing the RGB image, object IDs, and RTs.
+
+        """
+        datapoint = self.dataset[idx]
         
         # return datapoint info needed
         return datapoint['rgb'], datapoint['objs_id'], datapoint['RTs'][:, :3, 3]
 
     def _get_object_class_list(self):
-        classes = [
-            "master_chef_can",
-            "cracker_box",
-            "sugar_box",
-            "tomato_soup_can",
-            "mustard_bottle",
-            "tuna_fish_can",
-            "gelatin_box",
-            "potted_meat_can",
-            "mug",
-            "large_marker"
-        ]
-        return classes
+            """
+            Returns a list of object classes.
+
+            Returns:
+                list: A list of object classes.
+            """
+            classes = [
+                "master_chef_can",
+                "cracker_box",
+                "sugar_box",
+                "tomato_soup_can",
+                "mustard_bottle",
+                "tuna_fish_can",
+                "gelatin_box",
+                "potted_meat_can",
+                "mug",
+                "large_marker"
+            ]
+            return classes
 
     def _get_object_images_labels(self):
-        x, y, _, _ = progress_objects()
-        return x, y
+            """
+            Retrieves the object images and labels.
+
+            Returns:
+                x (list): List of object images.
+                y (list): List of object labels.
+            """
+            x, y, _, _ = progress_objects()
+            return x, y
 
     def _init_parent_dataset(self, split, sornet_args):
+        """
+        Initializes the parent dataset for the PropsRelationDataset.
+
+        Args:
+            split (str): The split of the dataset to use.
+            sornet_args: Additional arguments for the parent dataset.
+
+        Returns:
+            PROPSPoseDataset: The initialized parent dataset.
+        """
         download = not os.path.isdir("PROPS-Pose-Dataset")
         return PROPSPoseDataset(".", split, download=download)
 
     def get_objs_in_image(self, idx):
-        return self.dataset[idx]['objs_id']
+            """
+            Returns the list of object IDs in the image at the given index.
+
+            Args:
+                idx (int): The index of the image.
+
+            Returns:
+                list: A list of object IDs in the image.
+            """
+            return self.dataset[idx]['objs_id']
 
 if __name__ == "__main__":
     # example usage below with dummy args
