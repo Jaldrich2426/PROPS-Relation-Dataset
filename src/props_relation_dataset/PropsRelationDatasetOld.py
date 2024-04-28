@@ -19,6 +19,7 @@ from props_relation_dataset.utils.data import progress_objects
 from torchvision.transforms import functional as F
 from pathlib import Path
 import re
+from timeit import Timer
 
 class PROPSRelationDataset(Dataset):
     
@@ -31,6 +32,7 @@ class PROPSRelationDataset(Dataset):
         self.objects_dict = self._load_objects("objects")
         self.rand_patch = False
         self.max_nobj = 10
+        self.t = Timer("""x.index(123)""", setup="""x = range(1000)""")
 
     def _load_objects(self,obj_dir):
         # For loop over folders in obj_dir
@@ -110,37 +112,47 @@ class PROPSRelationDataset(Dataset):
     def __getitem__(self, idx):
         
         data_dict = self.dataset[idx]
-    
+        # print(self.t.timeit(0))
         # Get object patches.
         obj_patches = self._get_obj_patches()
-      
+        # print(self.t.timeit(0))
+
         # Calculate relations -3D matrix, first dimension is relation type, second and third are object indices
         relations_matrix = self.get_spatial_relations(data_dict)
+        # print(self.t.timeit(0))
 
         # reformat relations matrix
 
         # combine last two dimensions but exclude diagonal elements between them
         diagonal_mask = torch.ones(self.max_nobj,self.max_nobj,dtype=torch.bool) ^ torch.eye(self.max_nobj, dtype=torch.bool)
+        # print(self.t.timeit(0))
         # print(diagonal_mask)
         relations = relations_matrix[:, diagonal_mask]
+        # print(self.t.timeit(0))
+
         # relations = relations_matrix.reshape(4, -1)
         # print(relations[0] == -2)
         # relations = relations[:, relations[0] != -2]
         
         # flatten
         relations = relations.reshape(-1)
+        # print(self.t.timeit(0))
 
         # Create a mask that will filter out invalid relations.
+
         mask = self._create_valid_relations_mask(relations)
+        # print(self.t.timeit(0))
         image = torch.tensor(data_dict['rgb'])
         # print(image.shape)
         # print(image.shape)
         # resize image to 480x320 (width x height)
+        # print(self.t.timeit(0))
         # print(image.shape)
         image = F.resize(image, (480, 640),antialias=True)
         # print(relations_matrix.dtype)
         # print(mask.dtype)
         # print(mask.reshape(-1).float().dtype)
+        # print(self.t.timeit(0))
         # print(obj_patches.dtype)
         # print(mask.reshape(-1).shape)
         return image, obj_patches, relations.float(), mask.reshape(-1).float()

@@ -4,6 +4,7 @@ README.md
 pyproject.toml
 setup.py
 __pycache__/PROPSRelationDataset.cpython-38.pyc
+objects/train_relations.pt
 objects/10_large_marker/large_marker_000.png
 objects/10_large_marker/large_marker_001.png
 objects/10_large_marker/large_marker_002.png

@@ -26,14 +26,14 @@ class PROPSRelationDataset(BaseRelationDataset):
     def __init__(self, split, object_dir, sornet_args, rand_patch, resize):
         super().__init__(split, object_dir, sornet_args, rand_patch, resize)
 
-    def _get_object_ids_in_image(self, idx):
-        return self.dataset[idx]['objs_id'].tolist()
+    
 
-    def _get_object_xyzs_in_image(self, idx, obj_idx):
-        return self.dataset[idx]["RTs"][obj_idx][:3, 3]
 
-    def _get_image(self, idx):
-        return self.dataset[idx]['rgb']
+    def _get_data(self, idx):
+        datapoint=self.dataset[idx]
+        
+        # return datapoint info needed
+        return datapoint['rgb'], datapoint['objs_id'], datapoint['RTs'][:, :3, 3]
 
     def _get_object_class_list(self):
         classes = [
